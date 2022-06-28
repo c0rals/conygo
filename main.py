@@ -1,10 +1,9 @@
-from asyncio.windows_events import NULL
-from multiprocessing.connection import wait
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-import dataExtraction as excel
+from dataExtraction import *
+from time import sleep
 
 # Driver setting
 options = webdriver.ChromeOptions()
@@ -15,8 +14,6 @@ wait_short = WebDriverWait(driver,20)
 wait_long = WebDriverWait(driver, 200)
 
 # Login
-
-
 def login(driver):
     driver.get("https://clinico.rayenaps.cl/")
     Ubicacion_input = driver.find_element(
@@ -48,8 +45,6 @@ def login(driver):
     return driver
 
 # Navegate to list
-
-
 def goToTable(driver):
     driver.find_element(
         By.ID, "navbar-main-menu").click()
@@ -67,8 +62,6 @@ def goToTable(driver):
     return driver
 
 # Get list of names (need to be valid names, not all names)
-
-
 def getNamesFromTable(driver):
     try:
         wait_short.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR,"div.rt-tr-group")))
@@ -89,16 +82,7 @@ def getNamesFromTable(driver):
 
     return tableNames
 
-# Search answers from excel by name
-
-
-def answersForName(nameList):
-    for name in nameList:
-        nameParsed = excel.parseData(name)
-        print(nameParsed)
-        print(excel.find_data(nameParsed))
-
-
+# Click on website calendar by day
 def click_calendar(driver,day):
     try:
         wait_short.until(EC.visibility_of_element_located((By.XPATH,"//*[@id='root']/div/div[1]/div[3]/div[1]/div/span[2]")))
@@ -142,6 +126,8 @@ def clickName(driver,name):
 if __name__ == '__main__':
     login(driver)
     goToTable(driver)
-    click_calendar(driver,"8")
-    # names = getNamesFromTable(driver)
-    # answersForName(names)
+    click_calendar(driver,"28")
+    names = getNamesFromTable(driver)
+    answersForName(names)
+    sleep(0.5)
+    driver.close()
